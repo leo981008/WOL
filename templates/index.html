@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi WOL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        .mac {
+            font-family: monospace;
+            background: #eee;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 1rem;
+            font-size: 14px;
+            min-height: 20px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wake on LAN</h1>
+        <p>Target MAC: <span class="mac">{{ mac_address }}</span></p>
+        <button id="wakeBtn" onclick="sendWOL()">Wake Up</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function sendWOL() {
+            const btn = document.getElementById('wakeBtn');
+            const statusDiv = document.getElementById('status');
+
+            btn.disabled = true;
+            statusDiv.textContent = 'Sending WOL packet...';
+            statusDiv.className = '';
+
+            fetch('/wake', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusDiv.textContent = 'Success: ' + data.message;
+                    statusDiv.className = 'success';
+                } else {
+                    statusDiv.textContent = 'Error: ' + data.message;
+                    statusDiv.className = 'error';
+                }
+            })
+            .catch(error => {
+                statusDiv.textContent = 'Network Error: ' + error;
+                statusDiv.className = 'error';
+            })
+            .finally(() => {
+                // Re-enable button after a short delay to prevent spam
+                setTimeout(() => {
+                    btn.disabled = false;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
