@@ -43,3 +43,30 @@
    ```
 2. 伺服器將會預設運行在 `0.0.0.0:5000`。
 3. 開啟瀏覽器，輸入伺服器的 IP 位址與埠號（例如：`http://<您的伺服器IP>:5000`），即可看到控制介面，並點擊按鈕來喚醒指定的裝置。
+
+## 設定開機自動啟動 (使用 systemd)
+
+如果您希望在系統（例如 Raspberry Pi）開機時自動啟動此應用程式，我們提供了一個 `wol.service` 範本檔。
+
+1. **修改服務設定檔**
+   打開專案根目錄下的 `wol.service` 檔案，並根據您的環境修改：
+   - `User`：您的系統使用者名稱（例如 `pi` 或 `ubuntu`）。
+   - `WorkingDirectory`：此專案目錄的絕對路徑。
+   - `ExecStart`：Python 的執行路徑。如果您使用虛擬環境，請將路徑指向虛擬環境的 python 執行檔。
+
+2. **複製服務檔到 systemd 目錄**
+   ```bash
+   sudo cp wol.service /etc/systemd/system/
+   ```
+
+3. **重新載入 systemd 設定並啟用服務**
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable wol.service
+   sudo systemctl start wol.service
+   ```
+
+4. **檢查服務狀態**
+   ```bash
+   sudo systemctl status wol.service
+   ```

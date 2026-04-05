@@ -1,0 +1,19 @@
+[Unit]
+Description=Wake-on-LAN Web App
+After=network.target
+
+[Service]
+# 請將這裡的 User 改為您的系統使用者名稱 (例如: pi 或 ubuntu)
+User=pi
+
+# 請將這裡的路徑改為您專案的絕對路徑
+WorkingDirectory=/home/pi/wol-webapp
+
+# 如果您使用虛擬環境，請將 python3 指向虛擬環境的執行檔路徑 (例如: /home/pi/wol-webapp/venv/bin/python3)
+ExecStart=/usr/bin/python3 app.py
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
